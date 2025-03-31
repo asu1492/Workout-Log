@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Daily Workout Dashboard</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f7f9;
+      padding: 20px;
+      color: #333;
+    }
+    .controls {
+      background: #fff;
+      padding: 15px;
+      border-radius: 8px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+      margin-bottom: 20px;
+      text-align: center;
+    }
+    .controls select, .controls button {
+      padding: 8px 12px;
+      font-size: 16px;
+      margin: 5px;
+    }
+    .header-card {
+      background: #fff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+      margin-bottom: 20px;
+      text-align: center;
+    }
+    .header-card h1 {
+      margin-bottom: 10px;
+    }
+    .info-line {
+      margin: 5px 0;
+      font-size: 18px;
+    }
+    .table-container {
+      background: #fff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+      overflow-x: auto;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+    }
+    th, td {
+      padding: 12px 15px;
+      border: 1px solid #ddd;
+      text-align: left;
+      vertical-align: middle;
+    }
+    th {
+      background-color: #4285f4;
+      color: #fff;
+    }
+    tr:nth-child(even) {
+      background-color: #f9f9f9;
+    }
+  </style>
+</head>
+<body>
+  <!-- Controls: Dropdown to select a workout file and a Load button -->
+  <div class="controls">
+    <select id="fileSelect">
+      <option>Loading...</option>
+    </select>
+    <button id="loadButton">Load Workout</button>
+  </div>
+
+  <!-- Header Section: Displays date, workout type, gym times and total duration -->
+  <div class="header-card" id="headerCard">
+    <h1>Workout Dashboard</h1>
+    <div id="workoutInfo">
+      <!-- Header info filled in by JavaScript -->
+    </div>
+  </div>
+
+  <!-- Combined Table Section -->
+  <div class="table-container">
+    <h2>Exercise Details</h2>
+    <div id="combinedTable">
+      <!-- Table generated here -->
+    </div>
+  </div>
+
+  <script>
+    // Load file log to populate dropdown from daily/filelog.json
+    function loadFileLog() {
+      fetch("daily/filelog.json")
+        .then(response => {
+          if (!response.ok) throw new Error("Could not load file log");
+          return response.json();
+        })
+        .then(manifest => {
+          const select = document.getElementById("fileSelect");
+          select.innerHTML = "";
+          manifest.files.forEach(fileName => {
+            const option = document.createElement("option");
+            option.value = fileName;
+            option.text = fileName;
+            select.appendChild(option);
+          });
+          // Optionally load file if specified in URL, otherwise load first file
+          const params = new URLSearchParams(window.location.search);
+          const queryFile = params.get("file");
+          if (queryFile) {
+            select.value = queryFile;
+            loadWorkoutData(queryFile);
+          }
+        })
+        .catch(error => {
+          console.error(error);
+          document.getElementById("fileSelect").innerHTML = "<option>Error loading file log</option>";
+        });
+    }
+
+    // Load workout JSON from the daily folder for a given file name
+    function loadWorkoutData(fileName) {
+      fetch("daily/" + fileName)
+        .then(response => {
+          if (!response.ok) throw new Error("Network response was not ok");
+          return response.json();
+        })
+        .then(data => {
+          renderHeader(data);
+          renderCombinedTable(data);
+        })
+        .catch(error => {
+          console.error("Error loading workout data:", error);
+          document.getElementById("workoutInfo").innerText =
+            "Error loading workout data: " + error.message;
+        });
+    }
+
+    // Render header: date, workout type, gym in/out times, total gym time
+    function renderHeader(data) {
+      const headerDiv = document.getElementById("workoutInfo");
+      headerDiv.innerHTML = "";
+
+      const dateElem = document.createElement("p");
+      dateElem.className = "info-line";
+      dateElem.innerHTML = `<strong>Date:</strong> ${data.date}`;
+      headerDiv.appendChild(dateElem);
+
+      const typeElem = document.createElement("p");
+      typeElem.className = "info-line";
+      typeElem.innerHTML = `<strong>Workout Type:</strong> ${data.workout_type}`;
+      headerDiv.appendChild(typeElem);
+
+      if (data.gym_in_time && data.gym_out_time) {
+        const inTime = data.gym_in_time;
+        const outTime = data.gym_out_time;
+        const [inH, inM] = inTime.split(":").map(Number);
+        const [outH, outM] = outTime.split(":").map(Number);
+        const totalMinutes = ((outH * 60 + outM) - (inH * 60 + inM));
+        const gymElem = document.createElement("p");
+        gymElem.className = "info-line";
+        gymElem.innerHTML = `<strong>Gym Time:</strong> ${inTime} - ${outTime} (Total: ${totalMinutes} minutes)`;
+        headerDiv.appendChild(gymElem);
+      }
+    }
+
+    // Render combined table with one row per set for each exercise
+    function renderCombinedTable(data) {
+      const actual = data.actual_training || {};
+      const suggested = data.suggested_training_next_session || {};
+
+      // Get union of exercise names
+      const exerciseNames = new Set([...Object.keys(actual), ...Object.keys(suggested)]);
+
+      // Create table and header row
+      const table = document.createElement("table");
+      const thead = document.createElement("thead");
+      const headerRow = document.createElement("tr");
+      ["Exercise", "Set #", "Actual Weight", "Actual Reps", "Suggested Weight", "Suggested Reps"].forEach(text => {
+        const th = document.createElement("th");
+        th.innerText = text;
+        headerRow.appendChild(th);
+      });
+      thead.appendChild(headerRow);
+      table.appendChild(thead);
+
+      const tbody = document.createElement("tbody");
+
+      // Process each exercise individually
+      exerciseNames.forEach(exercise => {
+        const actualEntry = actual[exercise];
+        const suggestedEntry = suggested[exercise];
+
+        let actualSets = [];
+        let suggestedSets = [];
+        let isSetBased = false;
+
+        if (actualEntry && actualEntry.sets && Array.isArray(actualEntry.sets)) {
+          actualSets = actualEntry.sets;
+          isSetBased = true;
+        }
+        if (suggestedEntry && suggestedEntry.sets && Array.isArray(suggestedEntry.sets)) {
+          suggestedSets = suggestedEntry.sets;
+          isSetBased = true;
+        }
+        // If suggested is provided as a string instruction, treat it as one "set"
+        else if (suggestedEntry && typeof suggestedEntry === "string") {
+          suggestedSets = [{ weight: suggestedEntry, reps: "" }];
+          isSetBased = true;
+        }
+
+        if (isSetBased) {
+          const maxRows = Math.max(actualSets.length, suggestedSets.length) || 1;
+          for (let i = 0; i < maxRows; i++) {
+            const row = document.createElement("tr");
+            if (i === 0) {
+              const exerciseCell = document.createElement("td");
+              exerciseCell.innerText = exercise;
+              exerciseCell.rowSpan = maxRows;
+              row.appendChild(exerciseCell);
+            }
+            const setCell = document.createElement("td");
+            setCell.innerText = i + 1;
+            row.appendChild(setCell);
+
+            const actualWeightCell = document.createElement("td");
+            const actualRepsCell = document.createElement("td");
+            if (actualSets[i]) {
+              actualWeightCell.innerText = actualSets[i].weight || "";
+              actualRepsCell.innerText = actualSets[i].reps || "";
+            } else {
+              actualWeightCell.innerText = "";
+              actualRepsCell.innerText = "";
+            }
+            row.appendChild(actualWeightCell);
+            row.appendChild(actualRepsCell);
+
+            const suggestedWeightCell = document.createElement("td");
+            const suggestedRepsCell = document.createElement("td");
+            if (suggestedSets[i]) {
+              suggestedWeightCell.innerText = suggestedSets[i].weight || "";
+              suggestedRepsCell.innerText = suggestedSets[i].reps || "";
+            } else {
+              suggestedWeightCell.innerText = "";
+              suggestedRepsCell.innerText = "";
+            }
+            row.appendChild(suggestedWeightCell);
+            row.appendChild(suggestedRepsCell);
+
+            tbody.appendChild(row);
+          }
+        }
+        // For non-set-based exercises (e.g. Plank or Cardio)
+        else {
+          const row = document.createElement("tr");
+          const exerciseCell = document.createElement("td");
+          exerciseCell.innerText = exercise;
+          row.appendChild(exerciseCell);
+
+          const setCell = document.createElement("td");
+          setCell.innerText = "-";
+          row.appendChild(setCell);
+
+          const actualDetailCell = document.createElement("td");
+          actualDetailCell.colSpan = 2;
+          if (actualEntry) {
+            if (actualEntry.duration) {
+              actualDetailCell.innerText = "Duration: " + actualEntry.duration;
+            } else if (actualEntry.distance) {
+              actualDetailCell.innerText = "Distance: " + actualEntry.distance;
+            }
+          } else {
+            actualDetailCell.innerText = "-";
+          }
+          row.appendChild(actualDetailCell);
+
+          const suggestedDetailCell = document.createElement("td");
+          suggestedDetailCell.colSpan = 2;
+          if (suggestedEntry) {
+            if (typeof suggestedEntry === "string") {
+              suggestedDetailCell.innerText = suggestedEntry;
+            } else if (suggestedEntry.duration) {
+              suggestedDetailCell.innerText = "Duration: " + suggestedEntry.duration;
+            } else if (suggestedEntry.distance) {
+              suggestedDetailCell.innerText = "Distance: " + suggestedEntry.distance;
+            }
+          } else {
+            suggestedDetailCell.innerText = "-";
+          }
+          row.appendChild(suggestedDetailCell);
+
+          tbody.appendChild(row);
+        }
+      });
+
+      table.appendChild(tbody);
+      const container = document.getElementById("combinedTable");
+      container.innerHTML = "";
+      container.appendChild(table);
+    }
+
+    // When "Load Workout" button is clicked, load the selected file
+    document.getElementById("loadButton").addEventListener("click", () => {
+      const fileName = document.getElementById("fileSelect").value;
+      loadWorkoutData(fileName);
+    });
+
+    // On page load, populate dropdown and load the workout
+    window.addEventListener("load", () => {
+      loadFileLog();
+    });
+  </script>
+</body>
+</html>

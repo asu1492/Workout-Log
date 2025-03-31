@@ -1,0 +1,227 @@
+{
+  "date": "2025-03-31",
+  "workout_type": "Push Day",
+  "gym_in_time": "08:10",
+  "gym_out_time": "09:15",
+  "actual_training": {
+    "Incline Dumbbell Press": {
+      "sets": [
+        {
+          "weight": "5kg",
+          "reps": 25
+        },
+        {
+          "weight": "7.5kg",
+          "reps": 20
+        },
+        {
+          "weight": "10kg",
+          "reps": 15
+        }
+      ],
+      "time": "8:10 - 8:25",
+      "duration_in_minutes": 15,
+      "type": "Push"
+    },
+    "Flat Barbell Bench Press": {
+      "sets": [
+        {
+          "weight": "30kg",
+          "reps": 15
+        },
+        {
+          "weight": "35kg",
+          "reps": 10
+        },
+        {
+          "weight": "30kg",
+          "reps": 10
+        }
+      ],
+      "time": "8:25 - 8:32",
+      "duration_in_minutes": 7,
+      "type": "Push"
+    },
+    "Seated Dumbbell Shoulder Press": {
+      "sets": [
+        {
+          "weight": "5kg",
+          "reps": 15
+        },
+        {
+          "weight": "7.5kg",
+          "reps": 15
+        },
+        {
+          "weight": "7.5kg",
+          "reps": 15
+        }
+      ],
+      "time": "8:32 - 8:45",
+      "duration_in_minutes": 13,
+      "type": "Push"
+    },
+    "Cable Triceps Pushdown": {
+      "sets": [
+        {
+          "weight": "6.8kg",
+          "reps": 15
+        },
+        {
+          "weight": "9.1kg",
+          "reps": 12
+        },
+        {
+          "weight": "11.3kg",
+          "reps": 8
+        }
+      ],
+      "time": "8:46 - 8:52",
+      "duration_in_minutes": 6,
+      "type": "Push"
+    },
+    "Overhead Triceps Extension": {
+      "sets": [
+        {
+          "weight": "5kg",
+          "reps": 10
+        },
+        {
+          "weight": "5kg",
+          "reps": 10
+        },
+        {
+          "weight": "5kg",
+          "reps": 10
+        }
+      ],
+      "time": "8:52 - 8:58",
+      "duration_in_minutes": 6,
+      "type": "Push"
+    },
+    "Side Lateral Raises": {
+      "sets": [
+        {
+          "weight": "2.5kg",
+          "reps": 25
+        },
+        {
+          "weight": "5kg",
+          "reps": 15
+        },
+        {
+          "weight": "5kg",
+          "reps": 14
+        },
+        {
+          "weight": "2.5kg",
+          "reps": 15
+        },
+        {
+          "weight": "5kg",
+          "reps": 10
+        },
+        {
+          "weight": "2.5kg",
+          "reps": 10
+        }
+      ],
+      "time": "8:59 - 9:09",
+      "duration_in_minutes": 10,
+      "type": "Push"
+    },
+    "Plank": {
+      "duration": "40 sec",
+      "type": "Core"
+    },
+    "Cardio": {
+      "distance": "2 km",
+      "type": "Cardio"
+    }
+  },
+  "suggested_training_next_session": {
+    "Incline Dumbbell Press": {
+      "sets": [
+        {
+          "weight": "7.5kg",
+          "reps": "10-12"
+        },
+        {
+          "weight": "10kg",
+          "reps": "8-10"
+        },
+        {
+          "weight": "10kg",
+          "reps": "8-10"
+        }
+      ]
+    },
+    "Flat Barbell Bench Press": {
+      "sets": [
+        {
+          "weight": "32.5kg",
+          "reps": "10-12"
+        },
+        {
+          "weight": "35kg",
+          "reps": "8-10"
+        },
+        {
+          "weight": "37.5kg",
+          "reps": "6-8"
+        }
+      ]
+    },
+    "Seated Dumbbell Shoulder Press": {
+      "sets": [
+        {
+          "weight": "7.5kg",
+          "reps": "10-12"
+        },
+        {
+          "weight": "10kg",
+          "reps": "8-10"
+        },
+        {
+          "weight": "10kg",
+          "reps": "8-10"
+        }
+      ]
+    },
+    "Cable Triceps Pushdown": {
+      "sets": [
+        {
+          "weight": "9.1kg",
+          "reps": "12"
+        },
+        {
+          "weight": "11.3kg",
+          "reps": "10"
+        },
+        {
+          "weight": "13.6kg",
+          "reps": "8"
+        }
+      ]
+    },
+    "Overhead Triceps Extension": {
+      "sets": [
+        {
+          "weight": "5kg",
+          "reps": "12"
+        },
+        {
+          "weight": "7.5kg",
+          "reps": "10"
+        },
+        {
+          "weight": "7.5kg",
+          "reps": "10"
+        }
+      ]
+    },
+    "Side Lateral Raises": "Continue with drop sets (e.g., 5kg to 2.5kg, 3 sets)",
+    "Plank": "45-60 sec",
+    "Cardio": "2.5-3 km or interval sprints"
+  }
+}
